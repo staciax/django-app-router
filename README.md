@@ -15,7 +15,7 @@ Linux/MacOS:
 $ python3 -m pip install -U django-app-router
 ```
 
-## Quick Example
+## Setup and Usage
 <app_name>/urls.py:
 ```python
 from pathlib import Path
@@ -31,35 +31,55 @@ urlpatterns += django_app_router.init(
     Path(__file__).resolve().parent / 'templates',
 )
 ```
-App folder structure:
+## Example
+for example, you have a page in the app folder:
+```python
+from django.shortcuts import render
+
+def page(request):
+    """home"""
+    # You can also name the page
+    # path(..., ..., name='home')
+
+    return render(request, 'page.html')
+
+```
+| Route | Example URL | params
+| --- | --- | --- |
+templates/page.py | / | |
+templates/info/page.py | /info | |
+templates/user/[user_id]/page.py | /user/1 | {'user_id': 1} |
+templates/(group)/login/page.py | /login | |
+
+### Example folder structure
 ```
 app
+├── migrations
+│   └── __init__.py
+├── templates
+│   ├── (group)
+│   │   ├── login
+│   │   │   ├── page.html
+│   │   │   └── page.py
+│   │   └── register
+│   │       ├── page.html
+│   │       └── page.py
+│   ├── info
+│   │   └── page.py
+│   ├── user
+│   │   └── [user_id]
+│   │       ├── page.html
+│   │       └── page.py
+│   ├── base.html
+│   ├── page.html
+│   └── page.py
 ├── __init__.py
 ├── admin.py
 ├── apps.py
-├── migrations
-│   └── __init__.py
 ├── models.py
-├── templates
-│   ├── page.html
-│   ├── page.py
-│   ├── info
-│   │   └── page.py
-│   └── user
-│       └── [user_id]
-│           ├── page.html
-│           └── page.py
 ├── tests.py
 ├── urls.py
 └── views.py
-```
-Above example will generate the following urlpatterns (approximately):
-```
-urlpatterns = [
-    path('', views.page, name='home'),
-    path('info/', views.info_page, name='info'),
-    path('/user/<int:user_id>/', views.user_page, name='get_user'),
-]
 ```
 
 You can see the full example in the [example](example) folder.
