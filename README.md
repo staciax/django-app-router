@@ -57,10 +57,10 @@ def page(request):
 
 | Route                              | Example URL | params           |
 | ---------------------------------- | ----------- | ---------------- |
-| `templates/page.py`                | `/`         | ` `              |
-| `templates/info/page.py`           | `/info`     | ` `              |
-| `templates/user/[user_id]/page.py` | `/user/1`   | `{'user_id': 1}` |
-| `templates/(group)/login/page.py`  | `/login`    |                  |
+| `templates/page.py`                | `/`         |                  |
+| `templates/info/page.py`           | `/info/`     |                  |
+| `templates/user/[user_id]/page.py` | `/user/1/`   | `{'user_id': 1}` |
+| `templates/(group)/login/page.py`  | `/login/`    |                  |
 
 ### Example folder structure
 
