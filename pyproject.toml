@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ["py312"]
+exclude = '''
+/(
+    \.git
+  | \.vscode
+  | \.venv
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 120
+combine_star = true
+combine_as_imports = true
+balanced_wrapping = true
+skip = [
+  ".git",
+  ".vscode",
+  ".venv",
+]
+
+[tool.pyright]
+include = [
+    "django_app_router",
+]
+exclude = [
+    "**/__pycache__",
+    "build",
+    "dist"
+]
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportUnusedImport = "error"
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
