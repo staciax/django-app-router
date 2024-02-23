@@ -22,9 +22,11 @@ from pathlib import Path
 
 import django_app_router
 
-urlpatterns = []
+urlpatterns = [
+    # Your other urlpatterns
+]
 
-urlpatterns += django_app_router.get_urlpatterns(
+urlpatterns += django_app_router.init(
     # The path to the templates folder
     Path(__file__).resolve().parent / 'templates',
 )
