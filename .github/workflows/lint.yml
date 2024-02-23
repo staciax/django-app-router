@@ -44,5 +44,6 @@ jobs:
           black --check django_app_router example
 
       - name: Run isort
+        if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
           isort --check-only --balanced django_app_router example
