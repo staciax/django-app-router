@@ -28,12 +28,13 @@ skip = [
 
 [tool.pyright]
 include = [
-    "django_app_router",
+  "django_app_router",
+  "example",
 ]
 exclude = [
-    "**/__pycache__",
-    "build",
-    "dist"
+  "**/__pycache__",
+  "build",
+  "dist"
 ]
 reportUnnecessaryTypeIgnoreComment = "warning"
 reportUnusedImport = "error"
