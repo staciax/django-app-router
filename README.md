@@ -1,22 +1,29 @@
 # django app router
+
 A modern, easy to use, and powerful router for Django apps. Inspired by the Next.js app router.
 
 ![Django App Router](https://raw.githubusercontent.com/staciax/django-app-router/master/docs/django-app-router-800.gif)
 
 ## Installing
+
 Python 3.12 or higher is required
 
 Windows: <br>
+
 ```
 $ pip install -U django-app-router
 ```
+
 Linux/MacOS:
+
 ```
 $ python3 -m pip install -U django-app-router
 ```
 
 ## Setup and Usage
+
 <app_name>/urls.py:
+
 ```python
 from pathlib import Path
 
@@ -31,8 +38,11 @@ urlpatterns += django_app_router.init(
     Path(__file__).resolve().parent / 'templates',
 )
 ```
+
 ## Example
+
 for example, you have a page in the app folder:
+
 ```python
 from django.shortcuts import render
 
@@ -44,14 +54,16 @@ def page(request):
     return render(request, 'page.html')
 
 ```
-| Route | Example URL | params
-| --- | --- | --- |
-templates/page.py | / | |
-templates/info/page.py | /info | |
-templates/user/[user_id]/page.py | /user/1 | {'user_id': 1} |
-templates/(group)/login/page.py | /login | |
+
+| Route                              | Example URL | params           |
+| ---------------------------------- | ----------- | ---------------- |
+| `templates/page.py`                | `/`         | ` `              |
+| `templates/info/page.py`           | `/info`     | ` `              |
+| `templates/user/[user_id]/page.py` | `/user/1`   | `{'user_id': 1}` |
+| `templates/(group)/login/page.py`  | `/login`    |                  |
 
 ### Example folder structure
+
 ```
 app
 ├── migrations
@@ -85,4 +97,5 @@ app
 You can see the full example in the [example](example) folder.
 
 ## License
+
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
