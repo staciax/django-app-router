@@ -11,6 +11,7 @@ exclude = '''
     \.git
   | \.vscode
   | \.venv
+  | build
 )/
 '''
 
@@ -24,6 +25,7 @@ skip = [
   ".git",
   ".vscode",
   ".venv",
+  "build",
 ]
 
 [tool.pyright]
@@ -33,8 +35,9 @@ include = [
 ]
 exclude = [
   "**/__pycache__",
+  "**/.venv",
   "build",
-  "dist"
+  "dist",
 ]
 reportUnnecessaryTypeIgnoreComment = "warning"
 reportUnusedImport = "error"
