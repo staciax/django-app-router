@@ -13,12 +13,8 @@ A modern, easy to use, and powerful router for Django apps. Inspired by the Next
 
 ## Requirements
 
-
 - Python 3.8+
 - Django 4.2+
-
-> **Note**
-> Not tested with other versions.
 
 ## Installing
 
