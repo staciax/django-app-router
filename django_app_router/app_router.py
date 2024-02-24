@@ -24,7 +24,7 @@ SOFTWARE.
 
 import logging
 from pathlib import Path
-from typing import Any, Callable, get_type_hints
+from typing import Any, Callable, List, get_type_hints
 
 from django.urls.resolvers import RoutePattern, URLPattern
 
@@ -71,7 +71,7 @@ def _normalize_route(
     return route
 
 
-def init(template_path: Path) -> list[URLPattern]:
+def init(template_path: Path) -> List[URLPattern]:
 
     url_patterns = []
 
