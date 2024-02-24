@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.black]
 line-length = 120
 skip-string-normalization = true
-target-version = ["py312"]
+target-version = ["py38"]
 exclude = '''
 /(
     \.git
@@ -41,5 +41,5 @@ exclude = [
 ]
 reportUnnecessaryTypeIgnoreComment = "warning"
 reportUnusedImport = "error"
-pythonVersion = "3.12"
+pythonVersion = "3.8"
 typeCheckingMode = "basic"
