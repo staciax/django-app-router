@@ -4,5 +4,5 @@ from django.shortcuts import render
 
 
 def page(request: HttpRequest) -> HttpResponse:
-    """login"""
+    """register"""
     return render(request, '(auth)/register/page.html')
