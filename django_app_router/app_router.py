@@ -32,7 +32,7 @@ from . import utils
 
 # fmt: off
 __all__ = (
-    'get_urlpatterns',
+    'init',
 )
 # fmt: on
 
@@ -40,7 +40,14 @@ __all__ = (
 log = logging.getLogger('django_app_router')
 
 
-def _normalize_route(route_path: Path, func: Callable[..., Any]) -> str:
+def _normalize_route(
+    route_path: Path,
+    func: Callable[..., Any],
+    *,
+    trailing_slash: bool = True,
+) -> str:
+
+    # TODO: route_path regex validation
 
     normal_route = []
     func_type_hints = get_type_hints(func)
@@ -53,13 +60,18 @@ def _normalize_route(route_path: Path, func: Callable[..., Any]) -> str:
             normal_route.append(f'<{param_type.__name__}:{param}>')
         elif param == '.':
             normal_route.append('')
+        elif param.startswith('(') and param.endswith(')'):
+            continue
         else:
             normal_route.append(param)
 
-    return '/'.join(normal_route)
+    route = '/'.join(normal_route)
+    if trailing_slash and route != '' and not route.endswith('/'):
+        route += '/'
+    return route
 
 
-def get_urlpatterns(template_path: Path) -> list[URLPattern]:
+def init(template_path: Path) -> list[URLPattern]:
 
     url_patterns = []
 
@@ -81,7 +93,7 @@ def get_urlpatterns(template_path: Path) -> list[URLPattern]:
         route = page_path.relative_to(template_path).parent
 
         route_string = _normalize_route(route, func)
-        route_name = getattr(module, 'name', None)
+        route_name = func.__doc__
 
         # TODO: support kwargs
         kwargs: Any = None
