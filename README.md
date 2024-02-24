@@ -11,9 +11,16 @@ A modern, easy to use, and powerful router for Django apps. Inspired by the Next
 - [x] Route parameters
 - [x] Route groups
 
-## Installing
+## Requirements
 
-Python 3.12 or higher is required
+
+- Python 3.12+
+- Django 5.0+
+
+> **Note**
+> Not tested with other versions.
+
+## Installing
 
 Windows: <br>
 
