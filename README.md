@@ -55,12 +55,12 @@ def page(request):
 
 ```
 
-| Route                              | Example URL | params           |
-| ---------------------------------- | ----------- | ---------------- |
-| `templates/page.py`                | `/`         |                  |
-| `templates/info/page.py`           | `/info/`     |                  |
-| `templates/user/[user_id]/page.py` | `/user/1/`   | `{'user_id': 1}` |
-| `templates/(group)/login/page.py`  | `/login/`    |                  |
+| Route                             | Example URL | params        |
+| --------------------------------- | ----------- | ------------- |
+| `templates/page.py`               | `/`         | `{}`          |
+| `templates/info/page.py`          | `/info/`    | `{}`          |
+| `templates/(group)/about/page.py` | `/about/`   | `{}`          |
+| `templates/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
 
 ### Example folder structure
 
@@ -69,7 +69,7 @@ app
 ├── migrations
 │   └── __init__.py
 ├── templates
-│   ├── (group)
+│   ├── (auth)
 │   │   ├── login
 │   │   │   ├── page.html
 │   │   │   └── page.py
