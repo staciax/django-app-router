@@ -10,7 +10,7 @@ __title__ = 'django_app_router'
 __author__ = 'STACiA'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2024-present STACiA(staciax)'
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 
 from typing import Literal, NamedTuple
@@ -25,6 +25,6 @@ class VersionInfo(NamedTuple):
     release: Literal['alpha', 'beta', 'final']
 
 
-version_info: VersionInfo = VersionInfo(major=0, minor=0, micro=3, release='final')
+version_info: VersionInfo = VersionInfo(major=0, minor=0, micro=4, release='final')
 
 del NamedTuple, Literal, VersionInfo
