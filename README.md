@@ -4,6 +4,13 @@ A modern, easy to use, and powerful router for Django apps. Inspired by the Next
 
 ![Django App Router](https://raw.githubusercontent.com/staciax/django-app-router/master/docs/django-app-router-800.gif)
 
+## Features
+
+- [x] Dynamic routing
+- [x] Nested routing
+- [x] Route parameters
+- [x] Route groups
+
 ## Installing
 
 Python 3.12 or higher is required
@@ -61,13 +68,6 @@ def page(request):
 | `templates/info/page.py`          | `/info/`    | `{}`          |
 | `templates/(group)/about/page.py` | `/about/`   | `{}`          |
 | `templates/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
-
-## Features
-
-- [x] Dynamic routing
-- [x] Nested routing
-- [x] Route parameters
-- [x] Route groups
 
 ### Example folder structure
 
