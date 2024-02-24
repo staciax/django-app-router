@@ -32,18 +32,17 @@ setup(
     long_description=readme,
     long_description_content_type='text/markdown',
     install_requires=requirements,
-    python_requires='>=3.12.0',
+    python_requires='>=3.8.0',
     classifiers=[
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        # TODO: test for python 3.8 - 3.11 and django 4.x
-        # 'Programming Language :: Python :: 3.8',
-        # 'Programming Language :: Python :: 3.9',
-        # 'Programming Language :: Python :: 3.10',
-        # 'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
     ],
 )
