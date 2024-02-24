@@ -41,7 +41,7 @@ urlpatterns += django_app_router.init(
 
 ## Example
 
-for example, you have a page in the app folder:
+for example, define a route with the file `page.py` in the `templates` folder:
 
 ```python
 from django.shortcuts import render
@@ -61,6 +61,13 @@ def page(request):
 | `templates/info/page.py`          | `/info/`    | `{}`          |
 | `templates/(group)/about/page.py` | `/about/`   | `{}`          |
 | `templates/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
+
+## Features
+
+- [x] Dynamic routing
+- [x] Nested routing
+- [x] Route parameters
+- [x] Route groups
 
 ### Example folder structure
 
