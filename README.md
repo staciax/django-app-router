@@ -82,7 +82,7 @@ app
 │   │   └── [user_id]
 │   │       ├── page.html
 │   │       └── page.py
-│   ├── base.html
+│   ├── layout.html
 │   ├── page.html
 │   └── page.py
 ├── __init__.py
