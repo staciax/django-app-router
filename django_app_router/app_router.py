@@ -23,6 +23,7 @@ SOFTWARE.
 """
 
 import logging
+import re
 from pathlib import Path
 from typing import Any, Callable, List, get_type_hints
 
@@ -39,6 +40,9 @@ __all__ = (
 
 log = logging.getLogger('django_app_router')
 
+SEGMENT_REGEX = re.compile(r'^(\[.+\])$')
+PATH_IGNORE_REGEX = re.compile(r'^(\(.+\))|^(_.+)$')
+
 
 def _normalize_route(
     route_path: Path,
@@ -54,13 +58,14 @@ def _normalize_route(
 
     route_path_string = str(route_path)
     for param in route_path_string.split('/'):
-        if param.startswith('[') and param.endswith(']'):
+        if SEGMENT_REGEX.match(param):
             param = param[1:-1]
             param_type = func_type_hints.get(param, str)
-            normal_route.append(f'<{param_type.__name__}:{param}>')
+            segment = f'<{param_type.__name__}:{param}>'
+            normal_route.append(segment)
         elif param == '.':
             normal_route.append('')
-        elif param.startswith('(') and param.endswith(')'):
+        elif PATH_IGNORE_REGEX.match(param):
             continue
         else:
             normal_route.append(param)

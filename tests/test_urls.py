@@ -60,3 +60,10 @@ def test_slug(client: Client):
     assert response.status_code == 200
 
     assert (f'Slug: {slug}').encode() in response.content
+
+
+@pytest.mark.urls('tests.urls')
+def test_ignore(client: Client):
+    response = client.get('/_test_ignore/')
+    assert isinstance(response, HttpResponse)
+    assert response.status_code == 404
