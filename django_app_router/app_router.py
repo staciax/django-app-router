@@ -26,7 +26,7 @@ import logging
 import re
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Callable, List, Union, get_type_hints
+from typing import Any, Callable, Iterator, List, Optional, TypeVar, get_type_hints
 
 from django.urls.resolvers import RoutePattern, URLPattern
 
@@ -38,8 +38,9 @@ __all__ = (
 )
 # fmt: on
 
+_F = TypeVar('_F', bound=Callable[..., Any])
 
-log = logging.getLogger('django_app_router')
+log = logging.getLogger('django_app_router.app_router')
 
 SEGMENT_REGEX = re.compile(r'^(\[.+\])$')
 PATH_IGNORE_REGEX = re.compile(r'^(\(.+\))|^(_.+)$')
@@ -47,7 +48,7 @@ PATH_IGNORE_REGEX = re.compile(r'^(\(.+\))|^(_.+)$')
 
 def _normalize_route(
     route_path: Path,
-    func: Callable[..., Any],
+    func: Callable[[_F], _F],
     *,
     trailing_slash: bool = True,
 ) -> str:
@@ -77,27 +78,18 @@ def _normalize_route(
     return route
 
 
-def get_router_urls(urlconf_module: Union[Path, str]) -> List[URLPattern]:
+def _make_url(route: str, view: Callable[[_F], _F], name: Optional[str] = None, **kwargs: Any) -> URLPattern:
+    route_pattern = RoutePattern(route, name=name, is_endpoint=True)
+    url_pattern = URLPattern(route_pattern, view, kwargs, name)
+    return url_pattern
 
-    url_patterns = []
 
-    if isinstance(urlconf_module, str):
-        module = import_module(urlconf_module)
-        if module.__file__ is None:
-            raise ImportError(f'Can\'t import module from {urlconf_module}')
+def _get_pages(target: Path) -> Iterator[URLPattern]:
 
-        module_path = Path(module.__file__).parent
-    else:
-        module_path = urlconf_module
+    page_files = target.glob('**/page.py')
 
-    if not module_path.exists():
-        raise FileNotFoundError(f'{module_path} does not exist')
-
-    pages = module_path.glob('**/page.py')
-
-    for page_path in pages:
-
-        module = utils.get_module_from_path(page_path)
+    for page_path in page_files:
+        module = utils.import_module_from_path(page_path)
 
         if not hasattr(module, 'page'):
             log.warning(f'Should have a page function in {page_path}')
@@ -105,17 +97,28 @@ def get_router_urls(urlconf_module: Union[Path, str]) -> List[URLPattern]:
 
         func = getattr(module, 'page')
 
-        route = page_path.relative_to(module_path).parent
+        route = page_path.relative_to(target).parent
 
         route_string = _normalize_route(route, func)
         route_name = func.__doc__
 
-        # TODO: support kwargs
-        kwargs: Any = None
+        yield _make_url(route_string, func, name=route_name)
 
-        route_pattern = RoutePattern(route_string, name=route_name, is_endpoint=True)
-        url_pattern = URLPattern(route_pattern, func, kwargs, route_name)
 
-        url_patterns.append(url_pattern)
+def get_router_urls(urlconf_module: str) -> List[URLPattern]:
+
+    url_patterns = []
+
+    module = import_module(urlconf_module)
+    if module.__file__ is None:
+        raise ImportError(f'Can\'t import module from {urlconf_module}')
+
+    module_path = Path(module.__file__).parent
+
+    if not module_path.exists():
+        raise FileNotFoundError(f'{module_path} does not exist')
+
+    # pages
+    url_patterns.extend(_get_pages(module_path))
 
     return url_patterns
