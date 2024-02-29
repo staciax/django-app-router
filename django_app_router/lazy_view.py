@@ -59,16 +59,9 @@ def get_view_urls(urlconf_module: str) -> list[URLPattern]:
 
     module: ModuleType = import_module(urlconf_module)
 
-    for func in module.__dict__.values():
-
-        if not callable(func):
-            continue
-
-        if not hasattr(func, '__url__'):
-            continue
-
-        url = getattr(func, '__url__')
-
-        urlpatterns.append(url)
+    for method_name in dir(module):
+        method = getattr(module, method_name)
+        if url := getattr(method, '__url__', None):
+            urlpatterns.append(url)
 
     return urlpatterns
