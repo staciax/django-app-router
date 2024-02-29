@@ -1,44 +1,74 @@
-from importlib import import_module
-from typing import Any, Callable, List, Optional, TypeVar
+from __future__ import annotations
 
-from django.urls.resolvers import RoutePattern, URLPattern
+from functools import partial
+from importlib import import_module
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
+
+from django.urls.resolvers import RegexPattern, RoutePattern, URLPattern
+from django.views.decorators.http import require_http_methods
 
 __all__ = (
-    'view',
+    'get',
+    'post',
+    'lazy_view',
     'get_view_urls',
 )
 
-T = TypeVar('T')
+if TYPE_CHECKING:
+    from types import ModuleType
+
+_F = TypeVar('_F', bound=Callable[..., Any])
 
 
-def view(path: str, *, name: Optional[str] = None) -> Callable[[T], T]:
+def _make_lazy_view(
+    route: str,
+    /,
+    *,
+    name: str | None = None,
+    re_path: bool = False,
+    methods: list[str] | None = None,
+    **kwargs: Any,
+) -> Callable[[_F], _F]:
     def decorator(func: Any) -> Any:
-        kwargs: Any = None
-        route_pattern = RoutePattern(path, name=name, is_endpoint=True)
-        url_pattern = URLPattern(route_pattern, func, kwargs, name)
-        setattr(func, '__url__', url_pattern)
+
+        if methods is not None:
+            func = require_http_methods(methods)(func)
+
+        # make the view lazy
+        Pattern = RoutePattern if not re_path else RegexPattern
+        pattern = Pattern(route, name=name, is_endpoint=True)
+        url = URLPattern(pattern, func, kwargs, name)
+        setattr(func, '__url__', url)
+
         return func
 
     return decorator
 
 
-def get_view_urls(urlconf_module: str) -> List[URLPattern]:
+lazy_view = partial(_make_lazy_view)
+
+get = partial(_make_lazy_view, methods=['GET'])
+post = partial(_make_lazy_view, methods=['POST'])
+
+re_get = partial(_make_lazy_view, re=True, methods=['GET'])
+re_post = partial(_make_lazy_view, re=True, methods=['POST'])
+
+
+def get_view_urls(urlconf_module: str) -> list[URLPattern]:
     urlpatterns = []
 
-    module = import_module(urlconf_module)
+    module: ModuleType = import_module(urlconf_module)
 
-    for name, obj in module.__dict__.items():
+    for func in module.__dict__.values():
 
-        if not callable(obj):
+        if not callable(func):
             continue
 
-        if name.startswith('_'):
+        if not hasattr(func, '__url__'):
             continue
 
-        if not hasattr(obj, '__url__'):
-            continue
+        url = getattr(func, '__url__')
 
-        url = getattr(obj, '__url__')
         urlpatterns.append(url)
 
     return urlpatterns
