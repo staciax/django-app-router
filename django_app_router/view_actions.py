@@ -1,26 +1,24 @@
 from __future__ import annotations
 
 from functools import partial
-from importlib import import_module
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar
 
 from django.urls.resolvers import RegexPattern, RoutePattern, URLPattern
 from django.views.decorators.http import require_http_methods
 
+from . import utils
+
 __all__ = (
     'get',
     'post',
-    'view',
-    'get_view_urls',
+    'view_action',
+    'get_view_actions_urls',
 )
-
-if TYPE_CHECKING:
-    from types import ModuleType
 
 _F = TypeVar('_F', bound=Callable[..., Any])
 
 
-def _make_lazy_view(
+def _make_view_action(
     route: str,
     /,
     *,
@@ -45,23 +43,28 @@ def _make_lazy_view(
     return decorator
 
 
-view = partial(_make_lazy_view)
+view_action = partial(_make_view_action)
 
-get = partial(_make_lazy_view, methods=['GET'])
-post = partial(_make_lazy_view, methods=['POST'])
+get = partial(_make_view_action, methods=['GET'])
+post = partial(_make_view_action, methods=['POST'])
 
-re_get = partial(_make_lazy_view, re=True, methods=['GET'])
-re_post = partial(_make_lazy_view, re=True, methods=['POST'])
+re_get = partial(_make_view_action, re=True, methods=['GET'])
+re_post = partial(_make_view_action, re=True, methods=['POST'])
 
 
-def get_view_urls(urlconf_module: str) -> list[URLPattern]:
-    urlpatterns = []
+def get_view_actions_urls(urlconf_module: str) -> list[URLPattern]:
 
-    module: ModuleType = import_module(urlconf_module)
+    urlpatterns: list[URLPattern] = []
 
-    for method_name in dir(module):
-        method = getattr(module, method_name)
-        if url := getattr(method, '__url__', None):
-            urlpatterns.append(url)
+    target_path = utils.get_module_path(urlconf_module).parent
+
+    action_files = target_path.glob('**/actions.py')
+
+    for action in action_files:
+        module = utils.import_module_from_path(action)
+        for method_name in dir(module):
+            method = getattr(module, method_name)
+            if url := getattr(method, '__url__', None):
+                urlpatterns.append(url)
 
     return urlpatterns
