@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 __all__ = (
     'get',
     'post',
-    'lazy_view',
+    'view',
     'get_view_urls',
 )
 
@@ -45,7 +45,7 @@ def _make_lazy_view(
     return decorator
 
 
-lazy_view = partial(_make_lazy_view)
+view = partial(_make_lazy_view)
 
 get = partial(_make_lazy_view, methods=['GET'])
 post = partial(_make_lazy_view, methods=['POST'])
