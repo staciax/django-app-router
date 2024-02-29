@@ -34,7 +34,7 @@ from . import utils
 
 # fmt: off
 __all__ = (
-    'init',
+    'get_router_urls',
 )
 # fmt: on
 
@@ -77,7 +77,7 @@ def _normalize_route(
     return route
 
 
-def init(urlconf_module: Union[Path, str]) -> List[URLPattern]:
+def get_router_urls(urlconf_module: Union[Path, str]) -> List[URLPattern]:
 
     url_patterns = []
 

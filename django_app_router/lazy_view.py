@@ -3,6 +3,11 @@ from typing import Any, Callable, List, Optional, TypeVar
 
 from django.urls.resolvers import RoutePattern, URLPattern
 
+__all__ = (
+    'view',
+    'get_view_urls',
+)
+
 T = TypeVar('T')
 
 
@@ -17,7 +22,7 @@ def view(path: str, *, name: Optional[str] = None) -> Callable[[T], T]:
     return decorator
 
 
-def init(urlconf_module: str) -> List[URLPattern]:
+def get_view_urls(urlconf_module: str) -> List[URLPattern]:
     urlpatterns = []
 
     module = import_module(urlconf_module)

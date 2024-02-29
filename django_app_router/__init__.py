@@ -16,6 +16,7 @@ __version__ = '0.0.5'
 from typing import Literal, NamedTuple
 
 from .app_router import *
+from .lazy_view import *
 
 
 class VersionInfo(NamedTuple):
