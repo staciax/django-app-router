@@ -24,8 +24,9 @@ SOFTWARE.
 
 import logging
 import re
+from importlib import import_module
 from pathlib import Path
-from typing import Any, Callable, List, get_type_hints
+from typing import Any, Callable, List, Union, get_type_hints
 
 from django.urls.resolvers import RoutePattern, URLPattern
 
@@ -76,14 +77,23 @@ def _normalize_route(
     return route
 
 
-def init(template_path: Path) -> List[URLPattern]:
+def init(urlconf_module: Union[Path, str]) -> List[URLPattern]:
 
     url_patterns = []
 
-    if not template_path.exists():
-        raise FileNotFoundError(f'{template_path} does not exist')
+    if isinstance(urlconf_module, str):
+        module = import_module(urlconf_module)
+        if module.__file__ is None:
+            raise ImportError(f'Can\'t import module from {urlconf_module}')
 
-    pages = template_path.glob('**/page.py')
+        module_path = Path(module.__file__).parent
+    else:
+        module_path = urlconf_module
+
+    if not module_path.exists():
+        raise FileNotFoundError(f'{module_path} does not exist')
+
+    pages = module_path.glob('**/page.py')
 
     for page_path in pages:
 
@@ -95,7 +105,7 @@ def init(template_path: Path) -> List[URLPattern]:
 
         func = getattr(module, 'page')
 
-        route = page_path.relative_to(template_path).parent
+        route = page_path.relative_to(module_path).parent
 
         route_string = _normalize_route(route, func)
         route_name = func.__doc__
