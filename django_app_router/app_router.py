@@ -47,8 +47,8 @@ def _clean_segment(segment: str) -> str:
     return segment
 
 
-def _create_parameter(segment: str, param_type: type) -> str:
-    return f'<{param_type.__name__}:{segment}>'
+def _create_parameter(param_name: str, param_type: type) -> str:
+    return f'<{param_type.__name__}:{param_name}>'
 
 
 def _get_route(
