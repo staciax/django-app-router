@@ -24,6 +24,7 @@ SOFTWARE.
 
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, get_type_hints
 
@@ -41,12 +42,6 @@ if TYPE_CHECKING:
     from django.urls.resolvers import URLPattern
 
 
-def _clean_segment(segment: str) -> str:
-    if segment.startswith('[') and segment.endswith(']'):
-        return segment[1:-1]
-    return segment
-
-
 def _create_parameter(param_name: str, param_type: type) -> str:
     return f'<{param_type.__name__}:{param_name}>'
 
@@ -59,39 +54,38 @@ def _get_route(
     trailing_slash: bool = True,
 ) -> str:
 
-    normal_route = []
+    parameters = []
     func_type_hints = get_type_hints(func)
     for segment in path.parts:
+
+        # dynamic segment
         if segment.startswith('[') and segment.endswith(']'):
-            parameter_name = _clean_segment(segment)
+            parameter_name = segment[1:-1]
             parameter_type = func_type_hints.get(parameter_name, str)
-            parameter = _create_parameter(parameter_name, parameter_type)
-            normal_route.append(parameter)
-        elif segment == '.':
-            normal_route.append('')
+            parameter = _create_parameter(
+                parameter_name,
+                parameter_type,
+            )
+            parameters.append(parameter)
+
+        # ignore segment
         elif segment.startswith(ignore_prefixes):
             continue
-        else:
-            normal_route.append(segment)
 
-    route = '/'.join(normal_route)
+        else:
+            parameters.append(segment)
+
+    route = '/'.join(parameters)
     if trailing_slash and route and not route.endswith('/'):
         route += '/'
 
     return route
 
 
-class AppRouter:
+class BaseRouter(ABC):
 
-    def __init__(self, trailing_slash: bool = True) -> None:
-        self.trailing_slash = trailing_slash
+    def __init__(self) -> None:
         self._router_dirs: list[Path] = []
-
-    @property
-    def urls(self):
-        if not hasattr(self, '_urls'):
-            self._urls = self.get_urls()
-        return self._urls
 
     def add_app(self, app: str, /) -> None:
 
@@ -109,6 +103,22 @@ class AppRouter:
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
+
+    @abstractmethod
+    def get_urls(self) -> list[URLPattern]: ...
+
+    @property
+    def urls(self):
+        if not hasattr(self, '_urls'):
+            self._urls = self.get_urls()
+        return self._urls
+
+
+class AppRouter(BaseRouter):
+
+    def __init__(self, trailing_slash: bool = True) -> None:
+        super().__init__()
+        self.trailing_slash = trailing_slash
 
     def get_urls(self) -> list[URLPattern]:
 

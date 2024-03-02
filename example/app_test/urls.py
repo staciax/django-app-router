@@ -1,8 +1,8 @@
 from django.urls import include, path
 
-import django_app_router
+from django_app_router import routers
 
-router = django_app_router.AppRouter()
+router = routers.AppRouter()
 router.add_app('app_test')
 
 urlpatterns = [
