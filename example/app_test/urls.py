@@ -1,5 +1,10 @@
+from django.urls import include, path
+
 import django_app_router
 
-urlpatterns = []
+router = django_app_router.AppRouter()
+router.add_app('app_test')
 
-urlpatterns += django_app_router.get_router_urls('app_test.templates')
+urlpatterns = [
+    path('', include(router.urls)),
+]

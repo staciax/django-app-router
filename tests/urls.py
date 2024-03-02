@@ -1,7 +1,8 @@
 import django_app_router
 
+router = django_app_router.AppRouter()
+router.add_app('tests')
+
 urlpatterns = []
 
-urlpatterns += django_app_router.get_router_urls('tests.templates')
-
-urlpatterns += django_app_router.get_view_actions_urls('tests.templates')
+urlpatterns += router.urls

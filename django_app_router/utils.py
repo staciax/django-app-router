@@ -25,11 +25,10 @@ SOFTWARE.
 from __future__ import annotations
 
 import importlib.util
-from importlib import import_module
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from types import ModuleType
 
 
@@ -42,13 +41,3 @@ def import_module_from_path(fp: Path) -> ModuleType:
         raise ImportError(f'Can\'t import module from {fp}')
     spec.loader.exec_module(module)
     return module
-
-
-def get_module_path(urlconf_module: str) -> Path:
-
-    module: ModuleType = import_module(urlconf_module)
-    if module.__file__ is None:
-        raise ImportError(f'Can\'t import module from {urlconf_module}')
-
-    module_path = Path(module.__file__).resolve()
-    return module_path

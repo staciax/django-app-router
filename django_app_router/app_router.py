@@ -22,103 +22,109 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import logging
-import re
-from importlib import import_module
-from pathlib import Path
-from typing import Any, Callable, Iterator, List, Optional, TypeVar, get_type_hints
+from __future__ import annotations
 
-from django.urls.resolvers import RoutePattern, URLPattern
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Callable, get_type_hints
+
+from django.urls import path
 
 from . import utils
 
 # fmt: off
 __all__ = (
-    'get_router_urls',
+    'AppRouter',
 )
 # fmt: on
 
-_F = TypeVar('_F', bound=Callable[..., Any])
-
-log = logging.getLogger('django_app_router.app_router')
-
-SEGMENT_REGEX = re.compile(r'^(\[.+\])$')
-PATH_IGNORE_REGEX = re.compile(r'^(\(.+\))|^(_.+)$')
+if TYPE_CHECKING:
+    from django.urls.resolvers import URLPattern
 
 
-def _normalize_route(
-    route_path: Path,
-    func: Callable[[_F], _F],
+def _clean_segment(segment: str) -> str:
+    if segment.startswith('[') and segment.endswith(']'):
+        return segment[1:-1]
+    return segment
+
+
+def _create_parameter(segment: str, param_type: type) -> str:
+    return f'<{param_type.__name__}:{segment}>'
+
+
+def _get_route(
+    path: Path,
+    func: Callable[..., Any],
     *,
+    ignore_prefixes: tuple[str, ...] = ('(', '_'),
     trailing_slash: bool = True,
 ) -> str:
 
-    # TODO: route_path regex validation
-
     normal_route = []
     func_type_hints = get_type_hints(func)
-
-    route_path_string = str(route_path)
-    for param in route_path_string.split('/'):
-        if SEGMENT_REGEX.match(param):
-            param = param[1:-1]
-            param_type = func_type_hints.get(param, str)
-            segment = f'<{param_type.__name__}:{param}>'
-            normal_route.append(segment)
-        elif param == '.':
+    for segment in path.parts:
+        if segment.startswith('[') and segment.endswith(']'):
+            parameter_name = _clean_segment(segment)
+            parameter_type = func_type_hints.get(parameter_name, str)
+            parameter = _create_parameter(parameter_name, parameter_type)
+            normal_route.append(parameter)
+        elif segment == '.':
             normal_route.append('')
-        elif PATH_IGNORE_REGEX.match(param):
+        elif segment.startswith(ignore_prefixes):
             continue
         else:
-            normal_route.append(param)
+            normal_route.append(segment)
 
     route = '/'.join(normal_route)
-    if trailing_slash and route != '' and not route.endswith('/'):
+    if trailing_slash and route and not route.endswith('/'):
         route += '/'
+
     return route
 
 
-def _make_url(route: str, view: Callable[[_F], _F], name: Optional[str] = None, **kwargs: Any) -> URLPattern:
-    route_pattern = RoutePattern(route, name=name, is_endpoint=True)
-    url_pattern = URLPattern(route_pattern, view, kwargs, name)
-    return url_pattern
+class AppRouter:
 
+    def __init__(self, trailing_slash: bool = True) -> None:
+        self.trailing_slash = trailing_slash
+        self._router_dirs: list[Path] = []
 
-def _get_pages(target: Path) -> Iterator[URLPattern]:
+    @property
+    def urls(self):
+        if not hasattr(self, '_urls'):
+            self._urls = self.get_urls()
+        return self._urls
 
-    page_files = target.glob('**/page.py')
+    def add_app(self, app: str, /) -> None:
 
-    for page_path in page_files:
-        module = utils.import_module_from_path(page_path)
+        app_dir = Path(app).resolve()
 
-        if not hasattr(module, 'page'):
-            log.warning(f'Should have a page function in {page_path}')
-            continue
+        if not app_dir.exists():
+            raise FileNotFoundError(f'No app directory found in {app}')
 
-        func = getattr(module, 'page')
+        router_dir = app_dir.joinpath('routers')
+        if not router_dir.exists():
+            raise FileNotFoundError(f'No routers directory found in {app}')
 
-        route = page_path.relative_to(target).parent
+        self._router_dirs.append(router_dir)
 
-        route_string = _normalize_route(route, func)
-        route_name = func.__doc__
+        # invalidate the urls cache
+        if hasattr(self, '_urls'):
+            del self._urls
 
-        yield _make_url(route_string, func, name=route_name)
+    def get_urls(self) -> list[URLPattern]:
 
+        urls = []
 
-def get_router_urls(urlconf_module: str) -> List[URLPattern]:
+        for route_dir in self._router_dirs:
+            page_files = route_dir.glob(r'**/page.py')
+            for page_file in page_files:
+                module = utils.import_module_from_path(page_file)
+                if method := getattr(module, 'page', None):
+                    file_path = page_file.relative_to(route_dir).parent
+                    route = _get_route(
+                        file_path,
+                        method,
+                        trailing_slash=self.trailing_slash,
+                    )
+                    urls.append(path(route, method, name=method.__doc__))
 
-    url_patterns = []
-
-    module = import_module(urlconf_module)
-    if module.__file__ is None:
-        raise ImportError(f'Can\'t import module from {urlconf_module}')
-
-    module_path = Path(module.__file__).parent
-
-    if not module_path.exists():
-        raise FileNotFoundError(f'{module_path} does not exist')
-
-    # pages
-    url_patterns.extend(_get_pages(module_path))
-
-    return url_patterns
+        return urls
