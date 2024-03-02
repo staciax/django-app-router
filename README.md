@@ -1,6 +1,36 @@
-# django app router
+<h2 align="center">Django App Router</h2>
 
-A modern, easy to use, and powerful router for Django apps. Inspired by the Next.js app router.
+<h4 align="center">
+    A library for creating routes in Django with a similar structure to
+    <a href="https://nextjs.org/docs/app/building-your-application/routing"> Next.js App Router. </a>
+</h4>
+
+<p align="center">
+    <a href="https://pypi.org/project/django-app-router/">
+        <img
+            alt="Releases"
+            src="https://img.shields.io/github/release/staciax/django-app-router.svg?style=for-the-badge&logo=github&color=F2CDCD&logoColor=D9E0EE&labelColor=302D41"
+        />
+    </a>
+    <a href="https://github.com/staciax/django-app-router/stargazers">
+        <img
+            alt="Stars"
+            src="https://img.shields.io/github/stars/staciax/django-app-router?colorA=363a4f&colorB=b7bdf8&style=for-the-badge"
+        />
+    </a>
+    <a href="https://github.com/staciax/django-app-router/issues">
+        <img
+            alt="Issues"
+            src="https://img.shields.io/github/issues/staciax/django-app-router?colorA=363a4f&colorB=f5a97f&style=for-the-badge"
+        />
+    </a>
+    <a href="https://github.com/staciax/django-app-router/contributors">
+        <img
+            slt="Contributors"
+            src="https://img.shields.io/github/contributors/staciax/django-app-router?colorA=363a4f&colorB=a6da95&style=for-the-badge"
+        />
+    </a>
+</p>
 
 <!-- ![Django App Router](https://raw.githubusercontent.com/staciax/django-app-router/master/docs/django-app-router-800.gif) -->
 
