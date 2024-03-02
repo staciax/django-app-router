@@ -73,10 +73,10 @@ def page(request):
 
 | Route                             | Example URL | params        |
 | --------------------------------- | ----------- | ------------- |
-| `templates/page.py`               | `/`         | `{}`          |
-| `templates/info/page.py`          | `/info/`    | `{}`          |
-| `templates/(group)/about/page.py` | `/about/`   | `{}`          |
-| `templates/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
+| `routers/page.py`               | `/`         | `{}`          |
+| `routers/info/page.py`          | `/info/`    | `{}`          |
+| `routers/(group)/about/page.py` | `/about/`   | `{}`          |
+| `routers/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
 
 ### Example folder structure
 
