@@ -58,7 +58,7 @@ urlpatterns = [
 
 ## Example
 
-for example, define a route with the file `page.py` in the `templates` folder:
+for example, define a route with the file `page.py` in the `routers` folder:
 
 ```python
 from django.shortcuts import render
