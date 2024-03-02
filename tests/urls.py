@@ -1,9 +1,8 @@
-from pathlib import Path
-
 import django_app_router
+
+router = django_app_router.AppRouter()
+router.add_app('tests')
 
 urlpatterns = []
 
-urlpatterns += django_app_router.init(
-    Path(__file__).resolve().parent / 'templates',
-)
+urlpatterns += router.urls

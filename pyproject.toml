@@ -51,4 +51,9 @@ typeCheckingMode = "basic"
 pythonpath = "."
 DJANGO_SETTINGS_MODULE = "tests.settings"
 python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
-addopts = "-v --showlocals --tb=short --strict -p no:warnings --cov=django_app_router"
+addopts = "-v --showlocals --tb=short --strict -p no:warnings --cov-report term-missing --cov=django_app_router"
+
+[tool.coverage.report]
+exclude_also = [
+  "if TYPE_CHECKING:",
+]

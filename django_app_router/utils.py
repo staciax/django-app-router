@@ -32,12 +32,12 @@ if TYPE_CHECKING:
     from types import ModuleType
 
 
-def get_module_from_path(fp: Path) -> ModuleType:
+def import_module_from_path(fp: Path) -> ModuleType:
     spec = importlib.util.spec_from_file_location('module', fp)
     if spec is None:
         raise ImportError(f'Can\'t import module from {fp}')
     module = importlib.util.module_from_spec(spec)
     if spec.loader is None:
-        raise ImportError(f'Can\'t import module from {fp}')
+        raise ImportError(f'Can\'t import module from {fp}')  # pragma: no cover
     spec.loader.exec_module(module)
     return module

@@ -2,7 +2,7 @@
 
 A modern, easy to use, and powerful router for Django apps. Inspired by the Next.js app router.
 
-![Django App Router](https://raw.githubusercontent.com/staciax/django-app-router/master/docs/django-app-router-800.gif)
+<!-- ![Django App Router](https://raw.githubusercontent.com/staciax/django-app-router/master/docs/django-app-router-800.gif) -->
 
 ## Features
 
@@ -32,21 +32,28 @@ $ python3 -m pip install -U django-app-router
 
 ## Setup and Usage
 
-<app_name>/urls.py:
+urls.py:
 
 ```python
-from pathlib import Path
+from django_app_router import routers
 
-import django_app_router
+router = routers.AppRouter()
+router.add_app('your_app') # app directory name
 
 urlpatterns = [
-    # Your other urlpatterns
+    # ...
 ]
 
-urlpatterns += django_app_router.init(
-    # The path to the templates folder
-    Path(__file__).resolve().parent / 'templates',
-)
+urlpatterns += router.urls
+```
+
+Alternatively, you can use the `include` function. like this:
+
+```python
+urlpatterns = [
+    # ...
+    path('', include(router.urls)),
+]
 ```
 
 ## Example
@@ -65,20 +72,20 @@ def page(request):
 
 ```
 
-| Route                             | Example URL | params        |
-| --------------------------------- | ----------- | ------------- |
-| `templates/page.py`               | `/`         | `{}`          |
-| `templates/info/page.py`          | `/info/`    | `{}`          |
-| `templates/(group)/about/page.py` | `/about/`   | `{}`          |
-| `templates/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
+| Route                           | Example URL | params        |
+| ------------------------------- | ----------- | ------------- |
+| `routers/page.py`               | `/`         | `{}`          |
+| `routers/info/page.py`          | `/info/`    | `{}`          |
+| `routers/(group)/about/page.py` | `/about/`   | `{}`          |
+| `routers/user/[slug]/page.py`   | `/user/1/`  | `{'slug': 1}` |
 
 ### Example folder structure
 
 ```
-app
+your_app
 ├── migrations
 │   └── __init__.py
-├── templates
+├── routers
 │   ├── (auth)
 │   │   ├── login
 │   │   │   ├── page.html
@@ -105,6 +112,23 @@ app
 ```
 
 You can see the full example in the [example](example) folder.
+
+## Notes
+
+if you have `.html` files in the `routers` directory. ensure that the `DIRS` setting in the `TEMPLATES` setting includes the `routers` directory.
+
+```python
+TEMPLATES = [
+    {
+        # ...
+        'DIRS': [
+            # any other directories
+            BASE_DIR / 'your_app' / 'routers',
+        ],
+        # ...
+    },
+]
+```
 
 ## License
 
