@@ -67,7 +67,7 @@ def page(request):
     # You can also name the page
     # path(..., ..., name='home')
 
-    return render(request, 'template.html')
+    return render(request, 'page.html')
 
 ```
 
