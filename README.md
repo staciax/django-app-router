@@ -33,6 +33,7 @@ $ python3 -m pip install -U django-app-router
 ## Setup and Usage
 
 urls.py:
+
 ```python
 from django_app_router import routers
 
@@ -45,15 +46,15 @@ urlpatterns = [
 
 urlpatterns += router.urls
 ```
+
 Alternatively, you can use the `include` function. like this:
+
 ```python
 urlpatterns = [
     # ...
     path('', include(router.urls)),
 ]
 ```
-
-
 
 ## Example
 
@@ -71,8 +72,8 @@ def page(request):
 
 ```
 
-| Route                             | Example URL | params        |
-| --------------------------------- | ----------- | ------------- |
+| Route                           | Example URL | params        |
+| ------------------------------- | ----------- | ------------- |
 | `routers/page.py`               | `/`         | `{}`          |
 | `routers/info/page.py`          | `/info/`    | `{}`          |
 | `routers/(group)/about/page.py` | `/about/`   | `{}`          |
@@ -113,7 +114,9 @@ your_app
 You can see the full example in the [example](example) folder.
 
 ## Notes
+
 if you have `.html` files in the `routers` directory. ensure that the `DIRS` setting in the `TEMPLATES` setting includes the `routers` directory.
+
 ```python
 TEMPLATES = [
     {
