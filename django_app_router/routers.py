@@ -51,7 +51,9 @@ def _get_route(
     *,
     trailing_slash: bool = True,
 ) -> str:
-
+    """
+    Constructs a route string based on the given path and function.
+    """
     parameters = []
     func_type_hints = get_type_hints(func)
     for segment in path.parts:
