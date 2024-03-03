@@ -38,6 +38,27 @@ def test_app_router_get_urls_without_trailing_slash(router: routers.AppRouter):
     assert all(not str(url.pattern).endswith('/') for url in urls)
 
 
+def test_app_router_add_url_method_1(router: routers.AppRouter):
+    router.include_app('tests')
+
+    urlpatterns = []
+    urlpatterns += router.urls
+
+    assert len(urlpatterns) != 0
+
+
+def test_app_router_add_url_method_2(router: routers.AppRouter):
+    from django.urls import include, path
+
+    router.include_app('tests')
+
+    urlpatterns = [
+        path('', include(router.urls)),
+    ]
+
+    assert len(urlpatterns) != 0
+
+
 def test_app_router_invalidate_url_cache(router: routers.AppRouter):
 
     assert not hasattr(router, '_urls')
