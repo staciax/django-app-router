@@ -4,7 +4,7 @@ from django.test.client import Client
 
 
 @pytest.mark.urls('tests.urls')
-def test_home(client: Client):
+def test_get_home_url(client: Client):
     response = client.get('/')
     assert response is not None
     assert isinstance(response, HttpResponse)
@@ -14,7 +14,7 @@ def test_home(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_group_about(client: Client):
+def test_get_group_about_url(client: Client):
     response = client.get('/about/')
     assert response is not None
     assert isinstance(response, HttpResponse)
@@ -24,7 +24,7 @@ def test_group_about(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_group_info(client: Client):
+def test_get_group_info_url(client: Client):
     response = client.get('/info/')
     assert response is not None
 
@@ -35,7 +35,7 @@ def test_group_info(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_nested_lv1(client: Client):
+def test_get_nested_lv1_url(client: Client):
     response = client.get('/test_nested/')
     assert isinstance(response, HttpResponse)
     assert response.status_code == 200
@@ -44,7 +44,7 @@ def test_nested_lv1(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_nested_lv2(client: Client):
+def test_get_nested_lv2_url(client: Client):
     response = client.get('/test_nested/test_nested_2/')
     assert isinstance(response, HttpResponse)
     assert response.status_code == 200
@@ -53,7 +53,7 @@ def test_nested_lv2(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_slug(client: Client):
+def test_get_slug_url(client: Client):
     slug = 'test-slug'
     response = client.get('/test_slug/{slug}/'.format(slug=slug))
     assert isinstance(response, HttpResponse)
@@ -63,7 +63,7 @@ def test_slug(client: Client):
 
 
 @pytest.mark.urls('tests.urls')
-def test_ignore(client: Client):
+def test_get_ignore_url(client: Client):
     response = client.get('/_test_ignore/')
     assert isinstance(response, HttpResponse)
     assert response.status_code == 404
