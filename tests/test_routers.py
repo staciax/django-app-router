@@ -48,7 +48,7 @@ def test_app_router_add_url_method_1(router: routers.AppRouter):
 
 
 def test_app_router_add_url_method_2(router: routers.AppRouter):
-    from django.urls import include, path
+    from django.urls import URLResolver, include, path
 
     router.include_app('tests')
 
@@ -56,7 +56,12 @@ def test_app_router_add_url_method_2(router: routers.AppRouter):
         path('', include(router.urls)),
     ]
 
-    assert len(urlpatterns) != 0
+    assert len(urlpatterns) == 1
+    assert isinstance(urlpatterns[0], URLResolver)
+
+    all_urls = list(urlpatterns[0].url_patterns)
+    assert len(all_urls) != 0
+    assert all(isinstance(url, URLPattern) for url in all_urls)
 
 
 def test_app_router_invalidate_url_cache(router: routers.AppRouter):
