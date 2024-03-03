@@ -33,6 +33,9 @@ if TYPE_CHECKING:
 
 
 def import_module_from_path(fp: Path) -> ModuleType:
+    """
+    Import a module from the given file path.
+    """
     spec = importlib.util.spec_from_file_location('module', fp)
     if spec is None:
         raise ImportError(f'Can\'t import module from {fp}')
