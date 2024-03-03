@@ -68,7 +68,7 @@ urls.py:
 from django_app_router import routers
 
 router = routers.AppRouter()
-router.add_app('your_app') # app directory name
+router.include_app('your_app') # app directory name
 
 urlpatterns = [
     # ...

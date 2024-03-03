@@ -6,7 +6,7 @@ def test_app_router():
 
     assert len(router.urls) == 0
 
-    router.add_app('tests')
+    router.include_app('tests')
 
     assert len(router.urls) == 7
 
@@ -16,7 +16,7 @@ def test_app_not_found():
 
     router = routers.AppRouter()
     try:
-        router.add_app(fake_app)
+        router.include_app(fake_app)
     except FileNotFoundError as e:
         assert f'No app directory found in {fake_app}' in e.args[0]
 
@@ -27,6 +27,6 @@ def test_app_routers_not_found():
     router = routers.AppRouter()
 
     try:
-        router.add_app(fake_app)
+        router.include_app(fake_app)
     except FileNotFoundError as e:
         assert f'No routers directory found in {fake_app}' in e.args[0]

@@ -41,16 +41,14 @@ __all__ = (
 if TYPE_CHECKING:
     from django.urls.resolvers import URLPattern
 
-
-def _create_parameter(param_name: str, param_type: type) -> str:
-    return f'<{param_type.__name__}:{param_name}>'
+PATH_IGNORE_PREFIXES = ('(', '_')
+# group, and private segments
 
 
 def _get_route(
     path: Path,
     func: Callable[..., Any],
     *,
-    ignore_prefixes: tuple[str, ...] = ('(', '_'),
     trailing_slash: bool = True,
 ) -> str:
 
@@ -62,14 +60,11 @@ def _get_route(
         if segment.startswith('[') and segment.endswith(']'):
             parameter_name = segment[1:-1]
             parameter_type = func_type_hints.get(parameter_name, str)
-            parameter = _create_parameter(
-                parameter_name,
-                parameter_type,
-            )
+            parameter = f'<{parameter_type.__name__}:{parameter_name}>'
             parameters.append(parameter)
 
         # ignore segment
-        elif segment.startswith(ignore_prefixes):
+        elif segment.startswith(PATH_IGNORE_PREFIXES):
             continue
 
         else:
@@ -87,7 +82,7 @@ class BaseRouter(ABC):
     def __init__(self) -> None:
         self._router_dirs: list[Path] = []
 
-    def add_app(self, app: str, /) -> None:
+    def include_app(self, app: str, /) -> None:
 
         app_dir = Path(app).resolve()
 
@@ -116,7 +111,10 @@ class BaseRouter(ABC):
 
 class AppRouter(BaseRouter):
 
-    def __init__(self, trailing_slash: bool = True) -> None:
+    def __init__(
+        self,
+        trailing_slash: bool = True,
+    ) -> None:
         super().__init__()
         self.trailing_slash = trailing_slash
 
