@@ -131,6 +131,9 @@ class AppRouter(BaseRouter):
             page_files = route_dir.glob(r'**/page.py')
             for page_file in page_files:
                 module = utils.import_module_from_path(page_file)
+
+                # TODO: Future features
+                # - Add support custom method name
                 if method := getattr(module, 'page', None):
                     file_path = page_file.relative_to(route_dir).parent
                     route = _get_route(
@@ -138,6 +141,12 @@ class AppRouter(BaseRouter):
                         method,
                         trailing_slash=self.trailing_slash,
                     )
-                    urls.append(path(route, method, name=method.__doc__))
+                    urls.append(
+                        path(
+                            route,
+                            method,
+                            name=method.__doc__,
+                        )
+                    )
 
         return urls
