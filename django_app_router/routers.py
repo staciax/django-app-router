@@ -58,17 +58,14 @@ def _get_route(
     func_type_hints = get_type_hints(func)
     for segment in path.parts:
 
-        # dynamic segment
+        if segment.startswith(PATH_IGNORE_PREFIXES):
+            continue
+
         if segment.startswith('[') and segment.endswith(']'):
             parameter_name = segment[1:-1]
             parameter_type = func_type_hints.get(parameter_name, str)
             parameter = f'<{parameter_type.__name__}:{parameter_name}>'
             parameters.append(parameter)
-
-        # ignore segment
-        elif segment.startswith(PATH_IGNORE_PREFIXES):
-            continue
-
         else:
             parameters.append(segment)
 
