@@ -107,10 +107,9 @@ class BaseRouter(ABC):
     @abstractmethod
     def get_urls(self) -> list[URLPattern]:
         """Return a list of URL patterns."""
-        pass
 
     @property
-    def urls(self):
+    def urls(self) -> list[URLPattern]:
         if not hasattr(self, '_urls'):
             self._urls = self.get_urls()
         return self._urls
