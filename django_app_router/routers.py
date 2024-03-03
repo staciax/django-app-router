@@ -80,9 +80,12 @@ def _get_route(
 class BaseRouter(ABC):
 
     def __init__(self) -> None:
-        self._router_dirs: list[Path] = []
+        self.app_router_dirs: list[Path] = []
 
     def include_app(self, app: str, /) -> None:
+        """
+        Includes an app in the router.
+        """
 
         app_dir = Path(app).resolve()
 
@@ -93,14 +96,16 @@ class BaseRouter(ABC):
         if not router_dir.exists():
             raise FileNotFoundError(f'No routers directory found in {app}')
 
-        self._router_dirs.append(router_dir)
+        self.app_router_dirs.append(router_dir)
 
         # invalidate the urls cache
         if hasattr(self, '_urls'):
             del self._urls
 
     @abstractmethod
-    def get_urls(self) -> list[URLPattern]: ...
+    def get_urls(self) -> list[URLPattern]:
+        """Return a list of URL patterns."""
+        pass
 
     @property
     def urls(self):
@@ -119,10 +124,12 @@ class AppRouter(BaseRouter):
         self.trailing_slash = trailing_slash
 
     def get_urls(self) -> list[URLPattern]:
-
+        """
+        Return a list of URL Pattern for the app router.
+        """
         urls = []
 
-        for route_dir in self._router_dirs:
+        for route_dir in self.app_router_dirs:
             page_files = route_dir.glob(r'**/page.py')
             for page_file in page_files:
                 module = utils.import_module_from_path(page_file)
