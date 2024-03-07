@@ -67,3 +67,10 @@ def test_get_ignore_url(client: Client):
     response = client.get('/_test_ignore/')
     assert isinstance(response, HttpResponse)
     assert response.status_code == 404
+
+
+@pytest.mark.urls('tests.urls')
+def test_get_app_dir_home(client: Client):
+    response = client.get('/test_app_dir/')
+    assert isinstance(response, HttpResponse)
+    assert response.status_code == 200

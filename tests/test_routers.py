@@ -139,3 +139,17 @@ def test_get_route_no_trailing_slash():
     func = lambda: None
     route = _get_route(path, func, trailing_slash=False)
     assert route == 'segment'
+
+
+def test_include_app_valid_app_dir_true():
+    router = routers.AppRouter()
+    router.include_app('tests', app_dir=True)
+    assert len(router.app_router_paths) == 1
+    assert router.app_router_paths[0].name == 'tests'
+
+
+def test_include_app_valid_app_dir_false():
+    router = routers.AppRouter()
+    router.include_app('tests', app_dir=False)
+    assert len(router.app_router_paths) == 1
+    assert router.app_router_paths[0].name == 'routers'

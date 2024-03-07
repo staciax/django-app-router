@@ -1,7 +1,8 @@
 import django_app_router
 
 router = django_app_router.AppRouter()
-router.include_app('tests')
+router.include_app('tests', app_dir=False)
+router.include_app('tests', app_dir=True)
 
 urlpatterns = []
 

@@ -79,23 +79,25 @@ def _get_route(
 class BaseRouter(ABC):
 
     def __init__(self) -> None:
-        self.app_router_dirs: list[Path] = []
+        self.app_router_paths = []
 
-    def include_app(self, app: str, /) -> None:
+    def include_app(self, app_name: str, /, *, app_dir: bool = True) -> None:
         """
         Includes an app in the router.
         """
+        app_path = Path(app_name).resolve()
 
-        app_dir = Path(app).resolve()
+        if not app_path.exists():
+            raise FileNotFoundError(f'No app directory found in {app_name}')
 
-        if not app_dir.exists():
-            raise FileNotFoundError(f'No app directory found in {app}')
+        router_path = app_path.joinpath('routers')
+        if not router_path.exists():
+            raise FileNotFoundError(f'No routers directory found in {app_name}')
 
-        router_dir = app_dir.joinpath('routers')
-        if not router_dir.exists():
-            raise FileNotFoundError(f'No routers directory found in {app}')
+        if app_dir and router_path.joinpath(app_name).exists():
+            router_path = router_path.joinpath(app_name)
 
-        self.app_router_dirs.append(router_dir)
+        self.app_router_paths.append(router_path)
 
         # invalidate the urls cache
         if hasattr(self, '_urls'):
@@ -127,15 +129,15 @@ class AppRouter(BaseRouter):
         """
         urls = []
 
-        for route_dir in self.app_router_dirs:
-            page_files = route_dir.glob(r'**/page.py')
+        for route_path in self.app_router_paths:
+            page_files = route_path.glob(r'**/page.py')
             for page_file in page_files:
                 module = utils.import_module_from_path(page_file)
 
                 # TODO: Future features
                 # - Add support custom method name
                 if method := getattr(module, 'page', None):
-                    file_path = page_file.relative_to(route_dir).parent
+                    file_path = page_file.relative_to(route_path).parent
                     route = _get_route(
                         file_path,
                         method,
